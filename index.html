@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘 뭐 먹지? | 점심 메뉴 추천</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #f7f9fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+
+        .menu-box {
+            background-color: #f8f9fa;
+            border: 2px dashed #e0e0e0;
+            border-radius: 15px;
+            padding: 30px 20px;
+            margin-bottom: 25px;
+            min-height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .menu-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ff6b6b;
+            word-break: keep-all;
+        }
+
+        .btn-recommend {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn-recommend:hover {
+            background-color: #ff5252;
+        }
+
+        .btn-recommend:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🍱 오늘 뭐 먹지?</h1>
+        <p class="subtitle">결정 장애를 위한 점심 메뉴 추천기</p>
+
+        <div class="menu-box">
+            <div class="menu-name" id="menuResult">버튼을 눌러주세요!</div>
+        </div>
+
+        <button class="btn-recommend" onclick="recommendMenu()">점심 메뉴 추천받기</button>
+    </div>
+
+    <script>
+        // 추천할 점심 메뉴 목록
+        const menuList = [
+            "제육볶음", "김치찌개", "돈가스", "짜장면 / 짬뽕", 
+            "부대찌개", "수제버거", "파스타", "연어덮밥(사케동)", 
+            "마라탕", "떡볶이+튀김", "쌀국수", "순두부찌개", 
+            "초밥", "포케 / 샐러드", "카레", "뼈해장국",
+            "냉면 / 밀면", "비빔밥", "칼국수"
+        ];
+
+        function recommendMenu() {
+            const resultElement = document.getElementById('menuResult');
+            
+            // 클릭 시 간단한 애니메이션 효과
+            let count = 0;
+            const timer = setInterval(() => {
+                const randomIndex = Math.floor(Math.random() * menuList.length);
+                resultElement.textContent = menuList[randomIndex];
+                count++;
+
+                // 10번 무작위로 바뀐 후 최종 선택
+                if (count > 10) {
+                    clearInterval(timer);
+                    const finalIndex = Math.floor(Math.random() * menuList.length);
+                    resultElement.textContent = menuList[finalIndex];
+                }
+            }, 50);
+        }
+    </script>
+
+</body>
+</html>
