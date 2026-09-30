@@ -1,131 +1,518 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>오늘 뭐 먹지? | 점심 메뉴 추천</title>
+    <title>살까말까 - 나만의 분홍 소비 통장</title>
+    <!-- 귀여운 폰트 적용 -->
+    <link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Gowun+Dodum&display=swap" rel="stylesheet">
     <style>
+        :root {
+            /* 핑크 통장 테마 색상 */
+            --bg-pink: #FCE8EE;
+            --passbook-pink: #F4A2B8;
+            --dark-pink: #D86B88;
+            --light-pink: #FFF0F5;
+            --text-color: #4A3B40;
+            --border-color: #E8B4C0;
+            
+            /* 포스트잇 메모지 색상 */
+            --memo-yellow: #FFF9C4;
+            --memo-pink: #FFE4EC;
+            --memo-white: #FFFFFF;
+            
+            --font-title: 'Gamja Flower', cursive;
+            --font-body: 'Gowun Dodum', sans-serif;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
         }
 
         body {
-            background-color: #f7f9fc;
+            background-color: var(--bg-pink);
+            /* 통장 모눈종이 배경 효과 */
+            background-image: 
+                linear-gradient(rgba(244, 162, 184, 0.18) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(244, 162, 184, 0.18) 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text-color);
+            font-family: var(--font-body);
+            padding: 30px 15px;
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: #333;
         }
 
         .container {
-            background: #ffffff;
-            padding: 40px 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
+            width: 100%;
+            max-width: 900px;
         }
 
-        h1 {
-            font-size: 1.8rem;
-            color: #2c3e50;
+        /* 상단 헤더 (통장 커버 느낌) */
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        header h1 {
+            font-family: var(--font-title);
+            color: var(--dark-pink);
+            font-size: 3rem;
+            margin-bottom: 6px;
+            text-shadow: 2px 2px 0px #FFF;
+        }
+
+        header p {
+            font-size: 1rem;
+            color: #7A5C65;
+            background: rgba(255, 255, 255, 0.7);
+            display: inline-block;
+            padding: 5px 18px;
+            border-radius: 20px;
+            border: 1px dashed var(--border-color);
+        }
+
+        /* 통장 & 메모지 카드 커스텀 */
+        .card {
+            background: var(--memo-white);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 4px 6px 15px rgba(216, 107, 136, 0.12);
+            margin-bottom: 30px;
+            border: 2px solid var(--border-color);
+            position: relative;
+        }
+
+        /* 통장 테이프 효과 */
+        .card::before {
+            content: "";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 26px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 1px dashed rgba(216, 107, 136, 0.4);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+
+        .card h2 {
+            font-family: var(--font-title);
+            font-size: 1.9rem;
+            color: var(--dark-pink);
+            margin-bottom: 15px;
+            border-bottom: 2px dashed var(--border-color);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* 통장 서식 내역 표 */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 680px;
+            margin-top: 10px;
+        }
+
+        th {
+            font-family: var(--font-title);
+            font-size: 1.25rem;
+            background-color: var(--light-pink);
+            color: var(--dark-pink);
+            padding: 10px 8px;
+            border-top: 2px solid var(--passbook-pink);
+            border-bottom: 2px solid var(--passbook-pink);
+            text-align: center;
+        }
+
+        td {
+            padding: 8px 6px;
+            border-bottom: 1px dashed var(--border-color);
+            vertical-align: middle;
+        }
+
+        /* 입력 폼 요소 */
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            background-color: #FFFDFE;
+            color: var(--text-color);
+            outline: none;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--dark-pink);
+            box-shadow: 0 0 5px rgba(216, 107, 136, 0.3);
+        }
+
+        textarea {
+            resize: vertical;
+            height: 38px;
+        }
+
+        /* 버튼 스타일 */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .btn {
+            font-family: var(--font-title);
+            font-size: 1.25rem;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-add {
+            background-color: #FFF;
+            color: var(--dark-pink);
+            border: 2px solid var(--passbook-pink);
+            padding: 4px 12px;
+            font-size: 1rem;
+        }
+
+        .btn-add:hover {
+            background-color: var(--light-pink);
+        }
+
+        .btn-primary {
+            background-color: var(--passbook-pink);
+            color: white;
+            flex: 2;
+            box-shadow: 0 3px 6px rgba(216, 107, 136, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--dark-pink);
+        }
+
+        .btn-secondary {
+            background-color: #FFF;
+            color: var(--dark-pink);
+            border: 1px solid var(--border-color);
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--light-pink);
+        }
+
+        .btn-del {
+            background-color: #FFB3B3;
+            color: #8B0000;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .btn-del:hover {
+            background-color: #FF8080;
+        }
+
+        /* 우선순위 결과 카드 (포스트잇 게시판) */
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        /* 개별 포스트잇 메모지 */
+        .postit {
+            background-color: var(--memo-yellow);
+            padding: 20px;
+            border-radius: 2px 2px 2px 20px;
+            box-shadow: 3px 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transform: rotate(-1.5deg);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-top: 1px solid #FFF59D;
+        }
+
+        .postit:nth-child(even) {
+            background-color: var(--memo-pink);
+            transform: rotate(1.5deg);
+        }
+
+        .postit:hover {
+            transform: scale(1.03) rotate(0deg);
+            box-shadow: 5px 8px 15px rgba(216, 107, 136, 0.25);
+            z-index: 5;
+        }
+
+        /* 우선순위 스티커 */
+        .sticker-rank {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: var(--dark-pink);
+            color: white;
+            font-family: var(--font-title);
+            font-size: 1.1rem;
+            padding: 4px 12px;
+            border-radius: 15px;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.15);
+            transform: rotate(5deg);
+        }
+
+        .rank-1 {
+            background: #FF6B81;
+            font-size: 1.3rem;
+        }
+
+        .postit-title {
+            font-family: var(--font-title);
+            font-size: 1.6rem;
+            color: var(--text-color);
+            margin-bottom: 10px;
+            word-break: break-all;
+        }
+
+        .postit-info {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #555;
             margin-bottom: 10px;
         }
 
-        p.subtitle {
-            font-size: 0.95rem;
-            color: #7f8c8d;
-            margin-bottom: 30px;
+        .postit-reason {
+            background: rgba(255, 255, 255, 0.6);
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--passbook-pink);
         }
 
-        .menu-box {
-            background-color: #f8f9fa;
-            border: 2px dashed #e0e0e0;
-            border-radius: 15px;
-            padding: 30px 20px;
-            margin-bottom: 25px;
-            min-height: 120px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .postit-cost {
+            font-size: 0.82rem;
+            color: #666;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px dashed var(--border-color);
+            line-height: 1.4;
         }
 
-        .menu-name {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #ff6b6b;
-            word-break: keep-all;
-        }
-
-        .btn-recommend {
-            background-color: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 12px;
-            cursor: pointer;
-            width: 100%;
-            transition: background-color 0.2s, transform 0.1s;
-        }
-
-        .btn-recommend:hover {
-            background-color: #ff5252;
-        }
-
-        .btn-recommend:active {
-            transform: scale(0.98);
+        .empty-msg {
+            text-align: center;
+            color: #A07885;
+            padding: 30px 0;
+            font-size: 1.05rem;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>🍱 오늘 뭐 먹지?</h1>
-        <p class="subtitle">결정 장애를 위한 점심 메뉴 추천기</p>
+<div class="container">
+    <header>
+        <h1>🌸 살까말까 소비 통장</h1>
+        <p>위시 항목을 적고, 마음속 필요도와 욕구를 비교해 알뜰한 순위를 정해봐요!</p>
+    </header>
 
-        <div class="menu-box">
-            <div class="menu-name" id="menuResult">버튼을 눌러주세요!</div>
+    <!-- 1. 위시 통장 입력 영역 -->
+    <div class="card">
+        <h2>
+            📋 통장 내역 작성 (일괄 입력)
+            <button class="btn btn-add" onclick="addRow()">+ 항목 추가</button>
+        </h2>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 22%;">살까말까 물건</th>
+                        <th style="width: 18%;">예상 금액 (원)</th>
+                        <th style="width: 17%;">얼마나 필요한가요?</th>
+                        <th style="width: 17%;">얼마나 갖고 싶나요?</th>
+                        <th style="width: 21%;">사고 싶은 이유 / 메모</th>
+                        <th style="width: 5%;">삭제</th>
+                    </tr>
+                </thead>
+                <tbody id="ledgerTbody">
+                    <!-- 기본 입력 행들 -->
+                </tbody>
+            </table>
         </div>
 
-        <button class="btn-recommend" onclick="recommendMenu()">점심 메뉴 추천받기</button>
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="addRow()">+ 줄 추가하기</button>
+            <button class="btn btn-primary" onclick="analyzeItems()">✨ 소비 우선순위 계산하기</button>
+        </div>
     </div>
 
-    <script>
-        // 추천할 점심 메뉴 목록
-        const menuList = [
-            "제육볶음", "김치찌개", "돈가스", "짜장면 / 짬뽕", 
-            "부대찌개", "수제버거", "파스타", "연어덮밥(사케동)", 
-            "마라탕", "떡볶이+튀김", "쌀국수", "순두부찌개", 
-            "초밥", "포케 / 샐러드", "카레", "뼈해장국",
-            "냉면 / 밀면", "비빔밥", "칼국수"
-        ];
+    <!-- 2. 우선순위 결과 (포스트잇 메모판) -->
+    <div class="card">
+        <h2>📌 우선순위 포스트잇 메모판</h2>
+        <div id="resultContainer">
+            <div class="empty-msg">
+                상단 통장에 사고 싶은 물건들을 입력하고<br>
+                <strong>[✨ 소비 우선순위 계산하기]</strong> 버튼을 누르면 추천 순서대로 메모지가 붙어요!
+            </div>
+        </div>
+    </div>
+</div>
 
-        function recommendMenu() {
-            const resultElement = document.getElementById('menuResult');
-            
-            // 클릭 시 간단한 애니메이션 효과
-            let count = 0;
-            const timer = setInterval(() => {
-                const randomIndex = Math.floor(Math.random() * menuList.length);
-                resultElement.textContent = menuList[randomIndex];
-                count++;
-
-                // 10번 무작위로 바뀐 후 최종 선택
-                if (count > 10) {
-                    clearInterval(timer);
-                    const finalIndex = Math.floor(Math.random() * menuList.length);
-                    resultElement.textContent = menuList[finalIndex];
-                }
-            }, 50);
+<script>
+    // 초기 시작 시 3개의 기본 줄 생성
+    window.onload = function() {
+        for (let i = 0; i < 3; i++) {
+            addRow();
         }
-    </script>
+    };
+
+    // 작성 줄 추가
+    function addRow() {
+        const tbody = document.getElementById('ledgerTbody');
+        const tr = document.createElement('tr');
+
+        tr.innerHTML = `
+            <td><input type="text" class="item-name" placeholder="예: 핑크 키보드"></td>
+            <td><input type="number" class="item-price" placeholder="예: 89000"></td>
+            <td>
+                <select class="item-need">
+                    <option value="10">🚨 필수품 (10)</option>
+                    <option value="8" selected>💡 꽤 필요함 (8)</option>
+                    <option value="5">🤔 글쎄요 (5)</option>
+                    <option value="2">❌ 안 필요함 (2)</option>
+                </select>
+            </td>
+            <td>
+                <select class="item-want">
+                    <option value="10" selected>💖 완전 갖고싶음 (10)</option>
+                    <option value="8">💕 갖고싶음 (8)</option>
+                    <option value="5">💛 보통 (5)</option>
+                    <option value="2">🤍 그냥그래요 (2)</option>
+                </select>
+            </td>
+            <td><textarea class="item-reason" placeholder="예: 기존 키보드가 고장남 / 색상이 예뻐서"></textarea></td>
+            <td style="text-align: center;"><button class="btn-del" onclick="removeRow(this)">삭제</button></td>
+        `;
+
+        tbody.appendChild(tr);
+    }
+
+    // 줄 삭제
+    function removeRow(btn) {
+        const tbody = document.getElementById('ledgerTbody');
+        if (tbody.children.length > 1) {
+            btn.closest('tr').remove();
+        } else {
+            alert('최소 한 줄은 작성 공간이 필요해요!');
+        }
+    }
+
+    // 일괄 측정 및 포스트잇 배치
+    function analyzeItems() {
+        const names = document.querySelectorAll('.item-name');
+        const prices = document.querySelectorAll('.item-price');
+        const needs = document.querySelectorAll('.item-need');
+        const wants = document.querySelectorAll('.item-want');
+        const reasons = document.querySelectorAll('.item-reason');
+
+        const items = [];
+
+        for (let i = 0; i < names.length; i++) {
+            const name = names[i].value.trim();
+            const price = parseFloat(prices[i].value);
+            const need = parseInt(needs[i].value);
+            const want = parseInt(wants[i].value);
+            const reason = reasons[i].value.trim();
+
+            if (name && !isNaN(price) && price > 0) {
+                // 필요도 가중치(60%) + 욕구 가중치(40%)를 가격으로 나누어 우선순위 점수 계산
+                const totalDesireScore = (need * 0.6) + (want * 0.4);
+                const priorityScore = (totalDesireScore / price) * 1000000;
+
+                items.push({
+                    name,
+                    price,
+                    need,
+                    want,
+                    reason: reason || '작성된 이유 없음',
+                    score: priorityScore
+                });
+            }
+        }
+
+        if (items.length === 0) {
+            alert('물건 이름과 가격을 바르게 입력해 주세요!');
+            return;
+        }
+
+        // 점수 기준 내림차순 정렬 (높은 순)
+        items.sort((a, b) => b.score - a.score);
+
+        renderResults(items);
+    }
+
+    // 기회비용 계산 텍스트
+    function getOpportunityCostText(price) {
+        const coffee = Math.floor(price / 5000);
+        const chicken = Math.floor(price / 20000);
+        const workHours = (price / 10030).toFixed(1);
+
+        return `☕ <b>아메리카노</b> 약 ${coffee.toLocaleString()}잔<br>` +
+               `🍗 <b>치킨</b> 약 ${chicken.toLocaleString()}마리<br>` +
+               `⏰ <b>최저시급 기준</b> 약 ${workHours}시간 일해야 하는 금액`;
+    }
+
+    // 포스트잇 출력
+    function renderResults(items) {
+        const container = document.getElementById('resultContainer');
+        container.innerHTML = '';
+
+        const grid = document.createElement('div');
+        grid.className = 'result-grid';
+
+        items.forEach((item, index) => {
+            const rank = index + 1;
+            const postit = document.createElement('div');
+            postit.className = 'postit';
+
+            postit.innerHTML = `
+                <div class="sticker-rank ${rank === 1 ? 'rank-1' : ''}">${rank}순위</div>
+                <div class="postit-title">${item.name}</div>
+                <div class="postit-info">
+                    💵 <b>가격:</b> ${item.price.toLocaleString()}원<br>
+                    💡 <b>필요도:</b> ${item.need}점 / 💖 <b>보유욕구:</b> ${item.want}점
+                </div>
+                <div class="postit-reason">💭 <b>사고 싶은 이유:</b><br>${item.reason}</div>
+                <div class="postit-cost">
+                    ⚖️ <b>이 돈이면? (기회비용)</b><br>
+                    ${getOpportunityCostText(item.price)}
+                </div>
+            `;
+
+            grid.appendChild(postit);
+        });
+
+        container.appendChild(grid);
+    }
+</script>
 
 </body>
 </html>
